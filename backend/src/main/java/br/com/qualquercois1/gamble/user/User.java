@@ -35,7 +35,7 @@ public class User implements UserDetails{
     private String nome;
 
     @Column(nullable = false, unique = true)
-    private String nome_usuario;
+    private String nomeUsuario;
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -61,7 +61,7 @@ public class User implements UserDetails{
     @Override
     public String getUsername() {
         //o identificador do usuário vai ser o nome de usuario dele
-        return this.nome_usuario;
+        return this.nomeUsuario;
     }
 
     @Override
