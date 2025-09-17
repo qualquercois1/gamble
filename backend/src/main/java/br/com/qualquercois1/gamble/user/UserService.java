@@ -1,44 +1,22 @@
 package br.com.qualquercois1.gamble.user;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import br.com.qualquercois1.gamble.user.dto.UserRequestDTO;
-import br.com.qualquercois1.gamble.user.dto.UserResponseDTO;
-
 @Service
-public class UserService {
-    
+public class UserService implements UserDetailsService {
+
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
-    public UserResponseDTO register(UserRequestDTO userRequestDTO) {
-        User user = RequestDTOToUser(userRequestDTO);
-        userRepository.save(user);
-        return UserToResponseDTO(user);
-    }
-
-    private UserResponseDTO UserToResponseDTO(User user) {
-        UserResponseDTO userResponseDTO = new UserResponseDTO();
-        userResponseDTO.setId(user.getId());
-        userResponseDTO.setNome(user.getNome());
-        userResponseDTO.setNomeUsuario(user.getNomeUsuario());
-        userResponseDTO.setEmail(user.getEmail());
-        return userResponseDTO;
-    }
-
-    private User RequestDTOToUser(UserRequestDTO userRequestDTO) {
-        User user = new User();
-        user.setNome(userRequestDTO.getNome());
-        user.setSenha(passwordEncoder.encode(userRequestDTO.getSenha()));
-        user.setNomeUsuario(userRequestDTO.getNomeUsuario());
-        user.setEmail(userRequestDTO.getEmail());
-        user.setRole(Role.ROLE_USER);
-        return user;
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByNomeUsuario(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + username));
     }
 }

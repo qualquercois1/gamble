@@ -1,36 +1,40 @@
-package br.com.qualquercois1.gamble.security;
+package br.com.qualquercois1.gamble.user;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.qualquercois1.gamble.user.UserService;
+import br.com.qualquercois1.gamble.security.dto.TokenDTO;
+import br.com.qualquercois1.gamble.user.dto.LoginRequestDTO;
 import br.com.qualquercois1.gamble.user.dto.UserRequestDTO;
 import br.com.qualquercois1.gamble.user.dto.UserResponseDTO;
-import jakarta.annotation.Generated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import ch.qos.logback.core.subst.Token;
+
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final UserService userService;
+    private final AuthService authService;
 
-    public AuthController(UserService userService) {
-        this.userService = userService;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
     }
 
     @PostMapping("/register")
     public ResponseEntity<UserResponseDTO> register(@RequestBody UserRequestDTO userRequestDTO) {
-        UserResponseDTO userResponseDTO = userService.register(userRequestDTO);
+        UserResponseDTO userResponseDTO = authService.register(userRequestDTO);
 
         return new ResponseEntity<>(userResponseDTO, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<TokenDTO> login(@RequestBody LoginRequestDTO loginRequestDTO) {
+        String token = authService.login(loginRequestDTO);
+        return ResponseEntity.ok(new TokenDTO(token, "Bearer"));
     }
     
 }
