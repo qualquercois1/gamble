@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import br.com.qualquercois1.gamble.user.dto.UserResponseDTO;
+import br.com.qualquercois1.gamble.user.dto.UserUpdateDTO;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -45,6 +46,18 @@ public class UserService implements UserDetailsService {
             return true;
         }
         return false;
+    }
+
+    public UserResponseDTO UpdateUser(Long id, UserUpdateDTO userUpdateDTO) {
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+
+        user.setEmail(userUpdateDTO.getEmail());
+        user.setNome(userUpdateDTO.getNome());
+        user.setNomeUsuario(userUpdateDTO.getNomeUsuario());
+
+        User savedUser = userRepository.save(user);
+
+        return userMapper.UserToResponseDTO(savedUser);
     }
 
     @Override
